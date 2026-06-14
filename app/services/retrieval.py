@@ -19,5 +19,3 @@ def retrieve_context(query: str, k: int = 5):
         )
     
     return "\n\n".join(context_parts)
-
-print(retrieve_context("Where is Ollama initialized?", 3))

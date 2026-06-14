@@ -31,7 +31,7 @@ This is:
 That distinction matters a LOT.
 
 
-# OUR V1 ARCHITECTURE
+# V1 ARCHITECTURE
 
 ```
 User
@@ -49,4 +49,36 @@ Tools Layer
 LLM (Ollama)
   ↓
 Vector DB (later)
+```
+
+
+# V1 FILE EDITING ARCHITECTURE
+
+There are 3 editing strategies:
+
+| Strategy               | Difficulty | Reliability |
+| ---------------------- | ---------- | ----------- |
+| Full rewrite           | easy       | bad         |
+| Search/replace patches | medium     | good        |
+| AST-aware editing      | hard       | excellent   |
+
+We are using:
+**search/replace patch editing**.
+
+This is realistic and production-worthy.
+
+```
+User Request
+   ↓
+Planner
+   ↓
+Retrieve Relevant File
+   ↓
+LLM Generates Patch
+   ↓
+Patch Validator
+   ↓
+Apply Edit
+   ↓
+Save Backup
 ```

@@ -10,10 +10,15 @@ from langgraph.prebuilt import ToolNode
 from app.core.llm import llm
 from app.prompts.system_prompt import SYSTEM_PROMPT
 from app.services.retrieval import retrieve_context
-from app.tools.file_tools import read_file
+from app.tools.file_tools import read_file, list_files
+from app.tools.edit_tools import replace_in_file
 
 
-tools = [read_file]
+tools = [
+    read_file,
+    replace_in_file,
+    list_files,
+]
 
 llm_with_tools = llm.bind_tools(tools)
 
@@ -49,6 +54,8 @@ def assistant_node(state: AgentState) -> str:
     response = llm_with_tools.invoke(
         [system_message] + messages
     )
+
+    print(response)
 
     return {
         "messages": [response]

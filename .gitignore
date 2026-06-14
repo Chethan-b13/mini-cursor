@@ -61,3 +61,5 @@ mypy_cache/
 docker-compose.override.yml
 # Vector DB
 chroma_db/
+# file backups
+.mini_cursor_backups/
