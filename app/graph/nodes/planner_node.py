@@ -14,5 +14,7 @@ def planner_node(state: AgentState):
     print("==========================\n")
 
     return {
-        "current_plan": plan
+        "current_plan": plan,
+        "execution_history": [],
+        "retry_count": 0,
     }

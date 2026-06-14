@@ -19,7 +19,9 @@ while True:
         },
         stream_mode="updates"
     ):
-
+        print("----------------------------------")
         print(event)
+        print("----------------------------------")
+        print()
 
     print()

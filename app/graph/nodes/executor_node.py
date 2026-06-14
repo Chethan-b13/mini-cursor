@@ -1,7 +1,7 @@
 from langchain_core.messages import SystemMessage
 
 from app.core.llm import llm
-from app.prompts.system_prompt import SYSTEM_PROMPT
+from app.prompts.executor_prompt import EXECUTOR_PROMPT
 from app.services.retrieval import retrieve_context
 
 from app.tools.file_tools import read_file, list_files
@@ -30,27 +30,25 @@ def executor_node(state):
 
     plan = state.get("current_plan")
 
-    system_message = SystemMessage(
-        content=f"""
-        {SYSTEM_PROMPT}
-
-        CURRENT EXECUTION PLAN:
-        {plan.model_dump_json(indent=2)}
-
-        RETRIEVED CONTEXT:
-        {retrieved_context}
-
-        REVIEWER FEEDBACK:
-        {state.get("review_feedback")}
-
-        Follow the approved plan carefully.
-        """
-    )
+    prompt_value = EXECUTOR_PROMPT.invoke({
+        "task": user_request,
+        "plan": plan.model_dump_json(indent=2),
+        "retrieved_context": retrieved_context,
+        "review_feedback": state.get("review_feedback", ""),
+        "execution_history": state.get("execution_history", "")
+    })
 
     response = llm_with_tools.invoke(
-        [system_message] + messages
+        prompt_value.to_messages() + messages
     )
 
+    # update operational memory
+
+    updated_history = state.get("execution_history",[])
+
+    updated_history.append(response.content)
+
     return {
-        "messages": [response]
+        "messages": [response],
+        "execution_history": updated_history, # operational memory.
     }

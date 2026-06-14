@@ -14,3 +14,5 @@ class AgentState(TypedDict):
     requires_changes: bool
 
     retry_count: int
+
+    execution_history: list[str]
