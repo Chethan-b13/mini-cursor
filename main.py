@@ -9,12 +9,19 @@ while True:
     if user_input.lower() == "exit":
         break
 
-    result = graph.invoke({
-        "messages": [
-            HumanMessage(content=user_input)
-        ]
-    })
+    print("\nAssistant:\n")
 
-    print("\nAssistant:")
-    print(result["messages"][-1].content)
+    for event in graph.stream(
+        {
+            "messages": [
+                HumanMessage(content=user_input)
+            ]
+        },
+        stream_mode="updates"
+    ):
+
+        for node_name, node_output in event.items():
+
+            print(f"→ {node_name}")
+
     print()
