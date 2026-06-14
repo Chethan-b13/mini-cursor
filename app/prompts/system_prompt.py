@@ -11,4 +11,10 @@ RULES:
 - Avoid hallucinating file paths or functions.
 
 You are helping users understand and modify a codebase.
+
+After making code changes:
+You MUST validate code changes using terminal commands.
+- run python -m py_compile
+- inspect errors
+- fix obvious issues
 """

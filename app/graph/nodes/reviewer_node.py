@@ -35,4 +35,5 @@ def reviewer_node(state):
     return {
         "review_feedback": review.feedback,
         "requires_changes": review.requires_changes,
+        "retry_count": state.get("retry_count", 0) + 1
     }

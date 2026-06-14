@@ -1,6 +1,8 @@
 from langgraph.graph import END
 from app.graph.state import AgentState
 
+MAX_RETRIES = 3
+
 def tools_router(state: AgentState):
     last_message = state["messages"][-1]
 
@@ -16,7 +18,10 @@ def approval_router(state):
     return END
 
 def review_router(state):
-    if state["requires_changes"]:
+    if (
+        state["requires_changes"] and
+        state["retry_count"] < MAX_RETRIES
+    ):
         return "executor"
 
     return END

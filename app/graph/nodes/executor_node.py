@@ -6,6 +6,7 @@ from app.services.retrieval import retrieve_context
 
 from app.tools.file_tools import read_file, list_files
 from app.tools.edit_tools import replace_in_file
+from app.tools.terminal_tools import run_terminal_command
 
 
 
@@ -13,6 +14,7 @@ tools = [
     read_file,
     replace_in_file,
     list_files,
+    run_terminal_command
 ]
 
 

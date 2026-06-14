@@ -12,3 +12,5 @@ class AgentState(TypedDict):
     review_feedback: Optional[str]
 
     requires_changes: bool
+
+    retry_count: int
