@@ -20,8 +20,6 @@ while True:
         stream_mode="updates"
     ):
 
-        for node_name, node_output in event.items():
-
-            print(f"→ {node_name}")
+        print(event)
 
     print()

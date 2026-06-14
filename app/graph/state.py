@@ -8,3 +8,7 @@ class AgentState(TypedDict):
     current_plan: Optional[ExecutionPlan]
 
     approved: bool
+
+    review_feedback: Optional[str]
+
+    requires_changes: bool

@@ -6,8 +6,9 @@ from app.graph.state import AgentState
 from app.graph.nodes.approval_node import approval_node
 from app.graph.nodes.executor_node import executor_node, tools
 from app.graph.nodes.planner_node import planner_node
+from app.graph.nodes.reviewer_node import reviewer_node
 
-from app.graph.router import approval_router, tools_router
+from app.graph.router import approval_router, tools_router, review_router
 
 graph_builder = StateGraph(AgentState)
 
@@ -31,6 +32,11 @@ graph_builder.add_node(
     ToolNode(tools)
 )
 
+graph_builder.add_node(
+    "reviewer",
+    reviewer_node
+)
+
 # EDGES
 
 graph_builder.add_edge(
@@ -50,7 +56,16 @@ graph_builder.add_conditional_edges(
 
 graph_builder.add_conditional_edges(
     "executor",
-    tools_router
+    tools_router,
+    {
+        "tools": "tools",
+        END: "reviewer"
+    }
+)
+
+graph_builder.add_conditional_edges(
+    "reviewer",
+    review_router
 )
 
 graph_builder.add_edge(

@@ -11,11 +11,12 @@ planner_llm = llm.with_structured_output(
     ExecutionPlan
 )
 
-def create_plan(task: str):
+def create_plan(task: str, retrieved_context: str):
     chain = PLANNER_PROMPT | planner_llm
 
     result = chain.invoke({
-        "task": task
+        "task": task,
+        "retrieved_context": retrieved_context
     })
 
     return result

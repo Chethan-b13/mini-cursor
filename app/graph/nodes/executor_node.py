@@ -38,6 +38,9 @@ def executor_node(state):
         RETRIEVED CONTEXT:
         {retrieved_context}
 
+        REVIEWER FEEDBACK:
+        {state.get("review_feedback")}
+
         Follow the approved plan carefully.
         """
     )
