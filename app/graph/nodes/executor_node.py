@@ -30,12 +30,18 @@ def executor_node(state):
 
     plan = state.get("current_plan")
 
+    raw_history = state.get("execution_history", [])
+    if not isinstance(raw_history, list):
+        raw_history = [raw_history]
+
     prompt_value = EXECUTOR_PROMPT.invoke({
         "task": user_request,
         "plan": plan.model_dump_json(indent=2),
         "retrieved_context": retrieved_context,
         "review_feedback": state.get("review_feedback", ""),
-        "execution_history": state.get("execution_history", "")
+        "execution_history": "\n".join(
+            str(item) for item in raw_history
+        )
     })
 
     response = llm_with_tools.invoke(
@@ -44,9 +50,10 @@ def executor_node(state):
 
     # update operational memory
 
-    updated_history = state.get("execution_history",[])
-
-    updated_history.append(response.content)
+    updated_history = raw_history
+    updated_history.append(
+        response.content if isinstance(response.content, str) else str(response.content)
+    )
 
     return {
         "messages": [response],

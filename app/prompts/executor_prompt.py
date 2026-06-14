@@ -24,6 +24,12 @@ EXECUTOR_PROMPT = ChatPromptTemplate.from_messages([
         - analyze why
         - avoid repeating identical actions
         - adapt strategy
+
+        At the end of your response, provide a clear verification summary that includes:
+        - files modified
+        - actual edits applied
+        - checks performed
+        - whether each approved plan step was completed
         """
     ),
     (
@@ -45,6 +51,7 @@ EXECUTOR_PROMPT = ChatPromptTemplate.from_messages([
         {execution_history}
 
         Follow the approved plan carefully.
+        When you are done, explicitly state which plan steps were completed and why the result is correct.
         """
     )
 ])

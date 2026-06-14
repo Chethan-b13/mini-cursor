@@ -10,3 +10,4 @@ pydantic
 python-dotenv
 chromadb
 tiktoken
+langchain-google-genai
