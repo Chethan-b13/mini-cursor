@@ -59,3 +59,5 @@ mypy_cache/
 *.log
 # Docker
 docker-compose.override.yml
+# Vector DB
+chroma_db/

@@ -1,10 +1,20 @@
-from langchain_ollama import ChatOllama
+from langchain_core.messages import HumanMessage
 
-llm = ChatOllama(
-    model="qwen2.5-coder:7b",
-    temperature=0
-)
+from app.graph.agent import graph
 
-response = llm.invoke("Write a python hello world")
 
-print(response.content)
+while True:
+    user_input = input("You: ")
+
+    if user_input.lower() == "exit":
+        break
+
+    result = graph.invoke({
+        "messages": [
+            HumanMessage(content=user_input)
+        ]
+    })
+
+    print("\nAssistant:")
+    print(result["messages"][-1].content)
+    print()
