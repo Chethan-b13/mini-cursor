@@ -1,7 +1,5 @@
-from langchain_core.messages import SystemMessage
-
 from app.core.llm import llm
-from app.prompts.executor_prompt import EXECUTOR_PROMPT
+from app.prompts.editing_subgraph_prompts import EDITING_AGENT_PROMPT
 from app.services.retrieval import retrieve_context
 
 from app.tools.file_tools import read_file, list_files
@@ -21,12 +19,13 @@ tools = [
 llm_with_tools = llm.bind_tools(tools)
 
 
-def executor_node(state):
+def editing_agent_node(state):
     messages = state["messages"]
 
     user_request = messages[-1].content
 
-    retrieved_context = retrieve_context(user_request)
+    ## Removing it since we're already getting context in planner
+    # retrieved_context = retrieve_context(user_request)
 
     plan = state.get("current_plan")
 
@@ -34,10 +33,10 @@ def executor_node(state):
     if not isinstance(raw_history, list):
         raw_history = [raw_history]
 
-    prompt_value = EXECUTOR_PROMPT.invoke({
+    prompt_value = EDITING_AGENT_PROMPT.invoke({
         "task": user_request,
         "plan": plan.model_dump_json(indent=2),
-        "retrieved_context": retrieved_context,
+        # "retrieved_context": retrieved_context,
         "review_feedback": state.get("review_feedback", ""),
         "execution_history": "\n".join(
             str(item) for item in raw_history

@@ -5,6 +5,10 @@ from app.schemas.plan import ExecutionPlan
 class AgentState(TypedDict):
     messages: Annotated[list, add_messages]
 
+    task_type: str
+
+    task_reasoning: str | None
+
     current_plan: Optional[ExecutionPlan]
 
     approved: bool
@@ -16,3 +20,7 @@ class AgentState(TypedDict):
     retry_count: int
 
     execution_history: list[str]
+
+    last_terminal_output: str | None
+
+    debug_attempts: int

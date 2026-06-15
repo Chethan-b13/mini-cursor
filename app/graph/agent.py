@@ -1,76 +1,47 @@
 from langgraph.graph import StateGraph, START, END
-from langgraph.prebuilt import ToolNode
 
 from app.graph.state import AgentState
 
-from app.graph.nodes.approval_node import approval_node
-from app.graph.nodes.executor_node import executor_node, tools
-from app.graph.nodes.planner_node import planner_node
-from app.graph.nodes.reviewer_node import reviewer_node
+from app.graph.nodes.analysis_agent_node import analysis_agent_node
+from app.graph.nodes.supervisor_node import supervisor_node
 
-from app.graph.router import approval_router, tools_router, review_router
+from app.graph.router import supervisor_router
+from app.graph.subgraphs.editing_subgraph import editing_subgraph
+from app.graph.subgraphs.debugging_subgraph import debugging_subgraph
+
 
 graph_builder = StateGraph(AgentState)
 
 graph_builder.add_node(
-    "planner",
-    planner_node
+    "supervisor",
+    supervisor_node
 )
 
 graph_builder.add_node(
-    "approval",
-    approval_node
+    "analysis_agent",
+    analysis_agent_node
 )
 
 graph_builder.add_node(
-    "executor",
-    executor_node
+    "editing_agent",
+    editing_subgraph
 )
 
 graph_builder.add_node(
-    "tools",
-    ToolNode(tools)
-)
-
-graph_builder.add_node(
-    "reviewer",
-    reviewer_node
+    "debugging_agent",
+    debugging_subgraph
 )
 
 # EDGES
 
 graph_builder.add_edge(
     START,
-    "planner"
-)
-
-graph_builder.add_edge(
-    "planner",
-    "approval"
+    "supervisor"
 )
 
 graph_builder.add_conditional_edges(
-    "approval",
-    approval_router
-)
-
-graph_builder.add_conditional_edges(
-    "executor",
-    tools_router,
-    {
-        "tools": "tools",
-        END: "reviewer"
-    }
-)
-
-graph_builder.add_conditional_edges(
-    "reviewer",
-    review_router
-)
-
-graph_builder.add_edge(
-    "tools",
-    "executor"
+    "supervisor",
+    supervisor_router
 )
 
 graph = graph_builder.compile()

@@ -2,7 +2,7 @@ import json
 from pydantic import BaseModel
 
 from app.core.llm import llm
-from app.prompts.reviewer_prompt import REVIEW_PROMPT
+from app.prompts.editing_subgraph_prompts import REVIEW_PROMPT
 
 
 class ReviewResult(BaseModel):

@@ -1,6 +1,6 @@
 # Mini Cursor
 
-Mini Cursor is a small agentic AI workflow built around a graph-based, tool-enabled code assistant. It integrates planning, approval, execution, review, and retrieval into a structured loop so the agent can inspect a codebase, propose a plan, execute with tools, and verify the result.
+Mini Cursor is a small agentic AI workflow built around a graph-based, tool-enabled code assistant. The project recently evolved from a single linear graph into a supervisor-driven architecture that orchestrates multiple subgraphs and agents. It integrates planning, approval, execution, review, and retrieval into a structured, modular loop so the agent can inspect a codebase, propose a plan, execute with tools, and verify the result.
 
 ## Overview
 
@@ -23,28 +23,26 @@ The agent is intentionally designed to separate thinking from acting:
 ### Core components
 
 - `main.py` — interactive CLI entrypoint
-- `app/graph/agent.py` — graph definition and node registration
-- `app/graph/router.py` — routing logic for workflow transitions
+- `app/graph/agent.py` — graph definition and node registration (now bootstraps a `supervisor` node that routes to subgraphs)
+- `app/graph/router.py` — routing logic for workflow transitions (supervisor router and subgraph routers)
 - `app/graph/state.py` — typed agent state fields
-- `app/graph/nodes/` — node implementations for each step
+- `app/graph/nodes/` — node implementations for each step (includes `supervisor_node`)
+- `app/graph/subgraphs/` — self-contained subgraphs such as `editing_subgraph` and `debugging_subgraph`
 - `app/core/llm.py` — central LLM client configuration
-- `app/services/` — planner, retrieval, and indexing services
+- `app/services/` — planner, retrieval, and indexing services (includes `supervisor` service for task classification)
 - `app/tools/` — file, edit, and terminal tools exposed to the agent
 
-### Workflow
+### Workflow (current architecture)
 
 ```mermaid
 flowchart TD
-    A[User task input] --> B[planner]
-    B --> C[approval]
-    C -->|approved| D[executor]
-    C -->|not approved| E[END]
-    D --> F[tool router]
-    F --> G[tools]
-    G --> D
-    D --> H[reviewer]
-    H -->|requires changes| D
-    H -->|approved| E[END]
+    A[User task input] --> S[supervisor]
+    S -->|classify| SA[subgraphs]
+    SA -->|analysis| AN[analysis_agent]
+    SA -->|editing| ES[editing_subgraph]
+    SA -->|debugging| DS[debugging_subgraph]
+    ES --> E[planner -> approval -> executor -> reviewer]
+    DS --> E
 
     subgraph Executor Tools
       T1[read_file]
@@ -53,20 +51,18 @@ flowchart TD
       T4[run_terminal_command]
     end
 
-    G --> T1
-    G --> T2
-    G --> T3
-    G --> T4
+    E --> T1
+    E --> T2
+    E --> T3
+    E --> T4
 ```
 
 1. User enters a task in `main.py`
-2. `planner_node` retrieves context and generates a structured `ExecutionPlan`
-3. `approval_node` prompts the user to confirm the proposed plan
-4. If approved, `executor_node` runs the task using the approved plan
-5. The executor can call tools such as `read_file`, `replace_in_file`, `list_files`, and `run_terminal_command`
-6. Tool results are routed through the graph so the agent can continue after tool execution
-7. `reviewer_node` evaluates the implementation result and may request another execution attempt if changes are required
-8. The workflow ends when the review is satisfied or retry limits are reached
+2. `supervisor_node` (backed by `app.services.supervisor.classify_task`) conservatively classifies the request into `analysis`, `editing`, `debugging`, or `refactoring`.
+3. The top-level graph routes the flow into a corresponding subgraph (for example `editing_subgraph`) that encapsulates the planner → approval → executor → reviewer loop.
+4. Subgraphs are self-contained graphs (see `app/graph/subgraphs/`) and can embed other subgraphs (the `debugging_subgraph` composes the `editing_subgraph`).
+5. Executors within subgraphs use the same tool bindings (`read_file`, `replace_in_file`, `list_files`, `run_terminal_command`) to perform actions.
+6. The reviewer nodes decide whether another execution pass is required; routers enforce retry limits.
 
 ### Routing logic
 
@@ -136,14 +132,18 @@ When prompted, approve the plan with `yes` or `no`.
 - `planner_node` uses `app.services.planner.create_plan()` to generate an `ExecutionPlan`
 - `approval_node` records whether the user wants to proceed
 - `executor_node` loads the plan and retrieved context, then invokes the LLM with tool bindings
-- `tools_router` determines whether the agent needs explicit tool execution
+- `editing_tools_router` determines whether the agent needs explicit tool execution
 - `reviewer_node` evaluates the final output and may loop back to executor if changes are needed
 
 ## Notes
 
-- The system is intentionally conservative: it prefers small, safe edits and avoids rewriting files unnecessarily.
-- The execution plan is structured with `objective`, `files_to_inspect`, `steps`, and `risks`.
-- The review step uses a separate LLM call to validate whether the task was completed correctly.
+ - The system is intentionally conservative: it prefers small, safe edits and avoids rewriting files unnecessarily.
+ - The execution plan is structured with `objective`, `files_to_inspect`, `steps`, and `risks`.
+ - The review step uses a separate LLM call to validate whether the task was completed correctly.
+
+### Migration / Upgrade Notes
+
+- The project was upgraded from a single linear graph (planner → approval → executor → reviewer) to a supervisor-driven orchestration model that routes tasks to purpose-built subgraphs and multi-agent workflows. For a detailed rationale and migration notes intended for portfolio presentation, see `UPGRADE.md`.
 
 ## Testing
 
