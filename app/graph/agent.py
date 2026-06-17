@@ -2,7 +2,7 @@ from langgraph.graph import StateGraph, START, END
 
 from app.graph.state import AgentState
 
-from app.graph.nodes.analysis_agent_node import analysis_agent_node
+from app.graph.nodes.analysis_agent.analysis_agent_node import analysis_agent_node
 from app.graph.nodes.supervisor_node import supervisor_node
 
 from app.graph.router import supervisor_router

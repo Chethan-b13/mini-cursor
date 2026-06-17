@@ -4,10 +4,10 @@ from langgraph.graph import (
     END,
 )
 
-from app.graph.nodes.approval_node import approval_node
-from app.graph.nodes.planner_node import planner_node
-from app.graph.nodes.editing_agent_node import editing_agent_node
-from app.graph.nodes.reviewer_node import reviewer_node
+from app.graph.nodes.editing_agent.approval_node import approval_node
+from app.graph.nodes.editing_agent.planner_node import planner_node
+from app.graph.nodes.editing_agent.editing_agent_node import editing_agent_node
+from app.graph.nodes.editing_agent.reviewer_node import reviewer_node
 from app.graph.nodes.tool_nodes import editing_tool_node
 from app.graph.router import (
     editing_approval_router, 

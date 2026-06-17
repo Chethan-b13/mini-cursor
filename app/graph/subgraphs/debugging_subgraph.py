@@ -4,8 +4,8 @@ from langgraph.graph import (
     END,
 )
 from app.graph.state import AgentState
-from app.graph.nodes.debug_terminal_node import debug_terminal_node
-from app.graph.nodes.debug_planner_node import debug_planner_node
+from app.graph.nodes.debug_agent.debug_terminal_node import debug_terminal_node
+from app.graph.nodes.debug_agent.debug_planner_node import debug_planner_node
 from app.graph.subgraphs.editing_subgraph import editing_subgraph
 
 
