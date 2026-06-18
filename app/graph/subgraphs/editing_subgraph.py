@@ -6,9 +6,9 @@ from langgraph.graph import (
 
 from app.graph.nodes.editing_agent.approval_node import approval_node
 from app.graph.nodes.editing_agent.planner_node import planner_node
-from app.graph.nodes.editing_agent.editing_agent_node import editing_agent_node
+from app.graph.nodes.editing_agent.executor_node import executor_node
 from app.graph.nodes.editing_agent.reviewer_node import reviewer_node
-from app.graph.nodes.tool_nodes import editing_tool_node
+from app.graph.nodes.editing_agent.tool_node import editing_tool_node
 from app.graph.router import (
     editing_approval_router, 
     editing_review_router, 
@@ -32,7 +32,7 @@ editing_graph_builder.add_node(
 
 editing_graph_builder.add_node(
     "editing_agent",
-    editing_agent_node
+    executor_node
 )
 
 editing_graph_builder.add_node(

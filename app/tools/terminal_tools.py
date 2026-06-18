@@ -8,6 +8,7 @@ def run_terminal_command(command: str):
     Run a terminal command in the project directory.
     """
     try:
+        print(f"ToolCall: run_terminal_command with command {command}")
         result = subprocess.run(
             command,
             shell=True,
@@ -15,6 +16,7 @@ def run_terminal_command(command: str):
             text=True,
             timeout=30,
         )
+        print(f"ToolCall (DONE): run_terminal_command")
         return f"""
             STDOUT:
             {result.stdout}

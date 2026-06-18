@@ -20,9 +20,7 @@ while True:
         stream_mode="updates"
     ):
         print("----------------------------------")
-        for node_name, node_output in event.items():
-            print(f"\n🔹 NODE: {node_name}")
-            print(node_output)
+        print(event)
         print("----------------------------------")
         print()
 

@@ -6,10 +6,11 @@ import os
 load_dotenv()
 
 llm = ChatOllama(
-    model="qwen3:8b",
-    temperature=0
+    model=os.getenv("OLLAMA_MODEL"),
+    base_url=os.getenv("OLLAMA_BASE_URL"),
+    temperature=0,
+    streaming=True,
 )
-
 
 # llm = ChatGoogleGenerativeAI(
 #     model="gemini-2.5-flash",

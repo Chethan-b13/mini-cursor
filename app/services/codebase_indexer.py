@@ -1,8 +1,12 @@
+import os 
+
+from dotenv import load_dotenv
 from pathlib import Path
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
+load_dotenv()
 
 IGNORE_DIRS = {
     ".git",
@@ -65,7 +69,8 @@ def chunk_code(content: str, chunk_size: int = 1500):
     return chunks
 
 embeddings = OllamaEmbeddings(
-    model="nomic-embed-text"
+    model="nomic-embed-text",
+    # base_url=os.getenv("OLLAMA_BASE_URL"),
 )
 
 vector_store = Chroma(
